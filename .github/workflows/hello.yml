@@ -17,6 +17,8 @@ jobs:
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
+      - name: Fail
+        run: exit 1
   notify:
     env:
       MASTER_BRANCH: 'refs/heads/main'
