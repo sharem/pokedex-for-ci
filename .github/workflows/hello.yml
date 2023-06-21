@@ -18,14 +18,15 @@ jobs:
   notify:
     env:
       MASTER_BRANCH: 'refs/heads/main'
+      VERSION: ${{ needs.build_and_deploy.outputs.app-version }}
     if: ${{ always() }}
     needs: [build_and_deploy]
     runs-on: ubuntu-latest
     steps:
       - name: Send message when deploy is success
         if: needs.build_and_deploy.result == 'success' && github.ref == env.MASTER_BRANCH
-        run: echo "Deployed *bipiapp* in *Cloud Run*! - Deployed version `${{ needs.build_and_deploy.outputs.app-version }}`"
+        run: echo "Deployed *bipiapp* in *Cloud Run*! - Deployed version $VERSION"
 
       - name: Send message when deploy fails
         if: failure() && github.ref == env.MASTER_BRANCH
-        run: echo "Ha fallado el despliegue de *bipiapp* en Cloud Run `${{ needs.build_and_deploy.outputs.app-version }}`"
+        run: echo "Ha fallado el despliegue de *bipiapp* en Cloud Run $VERSION"
