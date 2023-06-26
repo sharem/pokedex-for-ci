@@ -31,10 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - name: Success
-        run: exit 0
-      #- name: Fail
-      #  run: exit 1
+      #- name: Success
+      #  run: exit 0
+      - name: Fail
+        run: exit 1
   notify:
     env:
       VERSION: ${{ needs.build_and_deploy.outputs.app-version }}
