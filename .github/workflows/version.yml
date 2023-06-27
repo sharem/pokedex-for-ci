@@ -27,4 +27,4 @@ jobs:
           method: 'GET'
 
       - name: Send message when versions differ
-        run: echo ${{ steps.deployed-version.outputs.response }}
+        run: echo ${{ steps.deployed-version.outputs.response.version }}
