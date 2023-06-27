@@ -1,16 +1,19 @@
 name: Version Checker
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Say hello"]
+    types:
+      - completed
   workflow_dispatch:
+  
+concurrency:
+  group: "Say hello-refs/heads/main"
+  cancel-in-progress: true
 
 jobs:
   check_production_deployed_version:
     runs-on: ubuntu-latest
-    outputs:
-      app-version: ${{ steps.package-version.outputs.current-version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -18,7 +21,7 @@ jobs:
       - name: Get package version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
-      
+        
       - name: Get deployed version
         id: deployed-version
         uses: fjogeleit/http-request-action@v1.14.1
@@ -27,4 +30,8 @@ jobs:
           method: 'GET'
 
       - name: Send message when versions differ
-        run: echo ${{ fromJson(steps.deployed-version.outputs.response).version }}
+        env:
+          PACKAGE_VERSION: ${{ steps.package-version.outputs.current-version }}
+          DEPLOYED_VERSION: ${{ fromJson(steps.deployed-version.outputs.response).version }}
+        if: ${{ env.PACKAGE_VERSION != env.DEPLOYED_VERSION }}
+        run: echo "Deployed version $DEPLOYED_VERSION differs from the $PACKAGE_VERSION please check the pinged revision in GCloud"
